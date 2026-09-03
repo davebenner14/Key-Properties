@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Rental Application | Key Properties</title>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body data-page="application">
+
+<header class="site-header">
+  <div class="container header-inner">
+
+    <a class="brand" href="index.html">
+      <span class="brand-mark">K</span>
+
+      <span>
+        <strong>Key Properties</strong>
+        <small>Fort Erie, Ontario</small>
+      </span>
+    </a>
+
+    <nav class="main-nav">
+      <a href="index.html#available">Available Rentals</a>
+      <a href="inquiry.html">Rental Inquiry</a>
+      <a class="active" href="apply.html">Apply</a>
+    </nav>
+
+    <a class="button button-small button-outline" href="index.html">
+      Home
+    </a>
+
+  </div>
+</header>
+
+
+<main class="form-page">
+
+  <div class="container form-layout">
+
+    <aside class="form-sidebar">
+
+      <span class="eyebrow">Rental Application</span>
+
+      <h1>Apply for a Key Properties rental.</h1>
+
+      <p>
+        Complete the application as accurately as possible.
+      </p>
+
+      <div class="sidebar-note">
+        <strong>Before you begin</strong>
+
+        <p>
+          Have your current address, employment information,
+          landlord information and references available.
+        </p>
+      </div>
+
+      <a href="inquiry.html" class="text-link">
+        Not ready to apply? Send an inquiry →
+      </a>
+
+    </aside>
+
+
+    <section class="form-card form-card-wide">
+
+      <form id="applicationForm">
+
+
+        <!-- PROPERTY -->
+
+        <div class="form-section-heading">
+          <span>01</span>
+
+          <div>
+            <h2>Rental</h2>
+            <p>Which property are you applying for?</p>
+          </div>
+        </div>
+
+
+        <div class="form-grid two-columns">
+
+          <div class="field full">
+            <label for="applicationUnit">Property / unit *</label>
+
+            <select id="applicationUnit" name="unit" required>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="applicationMoveDate">
+              Date required *
+            </label>
+
+            <input
+              id="applicationMoveDate"
+              name="moveDate"
+              type="date"
+              required
+            >
+          </div>
+
+        </div>
+
+
+        <hr class="form-divider">
+
+
+        <!-- APPLICANT -->
+
+        <div class="form-section-heading">
+          <span>02</span>
+
+          <div>
+            <h2>Applicant Information</h2>
+            <p>Tell us about the primary applicant.</p>
+          </div>
+        </div>
+
+
+        <div class="form-grid two-columns">
+
+          <div class="field">
+            <label for="appFirstName">First name *</label>
+
+            <input
+              id="appFirstName"
+              name="firstName"
+              type="text"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="appLastName">Last name *</label>
+
+            <input
+              id="appLastName"
+              name="lastName"
+              type="text"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="appEmail">Email *</label>
+
+            <input
+              id="appEmail"
+              name="email"
+              type="email"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="appPhone">Phone *</label>
+
+            <input
+              id="appPhone"
+              name="phone"
+              type="tel"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="birthDate">Date of birth *</label>
+
+            <input
+              id="birthDate"
+              name="birthDate"
+              type="date"
+              required
+            >
+          </div>
+
+        </div>
+
+
+        <hr class="form-divider">
+
+
+        <!-- CURRENT ADDRESS -->
+
+        <div class="form-section-heading">
+          <span>03</span>
+
+          <div>
+            <h2>Current Residence</h2>
+            <p>Where are you living now?</p>
+          </div>
+        </div>
+
+
+        <div class="form-grid two-columns">
+
+          <div class="field full">
+            <label for="currentAddress">Street address *</label>
+
+            <input
+              id="currentAddress"
+              name="currentAddress"
+              type="text"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="currentCity">City *</label>
+
+            <input
+              id="currentCity"
+              name="currentCity"
+              type="text"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="currentProvince">Province *</label>
+
+            <input
+              id="currentProvince"
+              name="currentProvince"
+              type="text"
+              value="Ontario"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="currentLandlord">
+              Current landlord
+            </label>
+
+            <input
+              id="currentLandlord"
+              name="currentLandlord"
+              type="text"
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="currentLandlordPhone">
+              Landlord phone
+            </label>
+
+            <input
+              id="currentLandlordPhone"
+              name="currentLandlordPhone"
+              type="tel"
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="currentRent">
+              Current monthly rent
+            </label>
+
+            <input
+              id="currentRent"
+              name="currentRent"
+              type="number"
+              min="0"
+              step="1"
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="timeAtAddress">
+              Time at current address
+            </label>
+
+            <input
+              id="timeAtAddress"
+              name="timeAtAddress"
+              type="text"
+              placeholder="Example: 2 years, 6 months"
+            >
+          </div>
+
+
+          <div class="field full">
+            <label for="leavingReason">
+              Reason for leaving
+            </label>
+
+            <textarea
+              id="leavingReason"
+              name="leavingReason"
+              rows="3"
+            ></textarea>
+          </div>
+
+        </div>
+
+
+        <hr class="form-divider">
+
+
+        <!-- EMPLOYMENT -->
+
+        <div class="form-section-heading">
+          <span>04</span>
+
+          <div>
+            <h2>Employment & Income</h2>
+            <p>Your current employment information.</p>
+          </div>
+        </div>
+
+
+        <div class="form-grid two-columns">
+
+          <div class="field">
+            <label for="employer">Employer *</label>
+
+            <input
+              id="employer"
+              name="employer"
+              type="text"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="occupation">Occupation *</label>
+
+            <input
+              id="occupation"
+              name="occupation"
+              type="text"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="employerPhone">
+              Employer phone
+            </label>
+
+            <input
+              id="employerPhone"
+              name="employerPhone"
+              type="tel"
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="employmentLength">
+              Length of employment
+            </label>
+
+            <input
+              id="employmentLength"
+              name="employmentLength"
+              type="text"
+              placeholder="Example: 3 years"
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="monthlyIncome">
+              Approximate monthly income *
+            </label>
+
+            <input
+              id="monthlyIncome"
+              name="monthlyIncome"
+              type="number"
+              min="0"
+              required
+            >
+          </div>
+
+        </div>
+
+
+        <hr class="form-divider">
+
+
+        <!-- HOUSEHOLD -->
+
+        <div class="form-section-heading">
+          <span>05</span>
+
+          <div>
+            <h2>Household</h2>
+            <p>Who will be living in the rental?</p>
+          </div>
+        </div>
+
+
+        <div class="form-grid two-columns">
+
+          <div class="field">
+            <label for="adultOccupants">
+              Number of adults *
+            </label>
+
+            <input
+              id="adultOccupants"
+              name="adultOccupants"
+              type="number"
+              min="1"
+              value="1"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="childOccupants">
+              Number of children
+            </label>
+
+            <input
+              id="childOccupants"
+              name="childOccupants"
+              type="number"
+              min="0"
+              value="0"
+            >
+          </div>
+
+
+          <div class="field full">
+            <label for="occupantNames">
+              Names of other occupants
+            </label>
+
+            <textarea
+              id="occupantNames"
+              name="occupantNames"
+              rows="3"
+              placeholder="List anyone else who will be living in the unit."
+            ></textarea>
+          </div>
+
+
+          <div class="field">
+            <label for="coApplicant">
+              Co-applicant?
+            </label>
+
+            <select id="coApplicant" name="coApplicant">
+              <option>No</option>
+              <option>Yes</option>
+            </select>
+          </div>
+
+
+          <div class="field">
+            <label for="coApplicantName">
+              Co-applicant name
+            </label>
+
+            <input
+              id="coApplicantName"
+              name="coApplicantName"
+              type="text"
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="numberPets">
+              Number of pets
+            </label>
+
+            <input
+              id="numberPets"
+              name="numberPets"
+              type="number"
+              min="0"
+              value="0"
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="petType">
+              Pet type / details
+            </label>
+
+            <input
+              id="petType"
+              name="petType"
+              type="text"
+            >
+          </div>
+
+        </div>
+
+
+        <hr class="form-divider">
+
+
+        <!-- REFERENCES -->
+
+        <div class="form-section-heading">
+          <span>06</span>
+
+          <div>
+            <h2>References</h2>
+            <p>Please provide two references.</p>
+          </div>
+        </div>
+
+
+        <div class="form-grid two-columns">
+
+          <div class="field">
+            <label for="referenceOne">Reference 1 name *</label>
+
+            <input
+              id="referenceOne"
+              name="referenceOne"
+              type="text"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="referenceOnePhone">
+              Reference 1 phone *
+            </label>
+
+            <input
+              id="referenceOnePhone"
+              name="referenceOnePhone"
+              type="tel"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="referenceTwo">Reference 2 name *</label>
+
+            <input
+              id="referenceTwo"
+              name="referenceTwo"
+              type="text"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="referenceTwoPhone">
+              Reference 2 phone *
+            </label>
+
+            <input
+              id="referenceTwoPhone"
+              name="referenceTwoPhone"
+              type="tel"
+              required
+            >
+          </div>
+
+        </div>
+
+
+        <hr class="form-divider">
+
+
+        <!-- EMERGENCY -->
+
+        <div class="form-section-heading">
+          <span>07</span>
+
+          <div>
+            <h2>Emergency Contact</h2>
+            <p>Someone we can contact if necessary.</p>
+          </div>
+        </div>
+
+
+        <div class="form-grid two-columns">
+
+          <div class="field">
+            <label for="emergencyName">
+              Emergency contact name *
+            </label>
+
+            <input
+              id="emergencyName"
+              name="emergencyName"
+              type="text"
+              required
+            >
+          </div>
+
+
+          <div class="field">
+            <label for="emergencyPhone">
+              Emergency contact phone *
+            </label>
+
+            <input
+              id="emergencyPhone"
+              name="emergencyPhone"
+              type="tel"
+              required
+            >
+          </div>
+
+        </div>
+
+
+        <hr class="form-divider">
+
+
+        <!-- CONSENT -->
+
+        <div class="form-section-heading">
+          <span>08</span>
+
+          <div>
+            <h2>Review & Submit</h2>
+            <p>Please confirm the information above.</p>
+          </div>
+        </div>
+
+
+        <label class="checkbox-row">
+          <input type="checkbox" required>
+
+          <span>
+            I certify that the information provided in this application
+            is true and complete to the best of my knowledge.
+          </span>
+        </label>
+
+
+        <div class="field">
+          <label for="signature">
+            Applicant full name / signature *
+          </label>
+
+          <input
+            id="signature"
+            name="signature"
+            type="text"
+            placeholder="Type your full legal name"
+            required
+          >
+        </div>
+
+
+        <button
+          class="button button-primary button-full"
+          type="submit"
+        >
+          Submit Rental Application
+        </button>
+
+
+        <div id="applicationSuccess" class="success-message hidden">
+          <strong>Application form is ready. ✓</strong>
+
+          <p>
+            This V1 prototype does not send personal information anywhere.
+            Email delivery will be connected before the site goes live.
+          </p>
+        </div>
+
+      </form>
+
+    </section>
+
+  </div>
+
+</main>
+
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+
+    <div>
+      <strong>Key Properties</strong>
+      <p>Residential rentals in Fort Erie and the Niagara Region.</p>
+    </div>
+
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="inquiry.html">Rental Inquiry</a>
+    </div>
+
+  </div>
+</footer>
+
+<script src="app.js"></script>
+
+</body>
+</html>
