@@ -1,33 +1,44 @@
 /* =========================================================
-   KEY PROPERTIES V1
-   Frontend-only prototype
+   KEY PROPERTIES
+   Frontend-only preview
    ========================================================= */
 
 
-/*
-  These units are seeded from the current
-  Key Properties Manager Airtable base.
+/* =========================================================
+   STORAGE
+   ========================================================= */
 
-  IMPORTANT:
-  V1 uses localStorage only.
+const STORAGE_KEY = "keyPropertiesUnits";
 
-  Later we will replace localStorage with a tiny shared store,
-  so Mom, Dad and David all see the same availability.
-*/
-
-
-const STORAGE_KEY = "keyPropertiesUnitsV1";
-
-const ADMIN_SESSION_KEY = "keyPropertiesAdminV1";
+const ADMIN_SESSION_KEY = "keyPropertiesAdmin";
 
 
 /* =========================================================
-   REAL KEY PROPERTIES UNIT DATA
+   PREVIEW ADMIN ACCESS
+
+   NOTE:
+   This is intentionally lightweight frontend-only
+   authentication for the prototype.
+
+   It is NOT production security.
+   ========================================================= */
+
+const APPROVED_ADMIN_EMAILS = [
+  "davebenner14@gmail.com",
+  "annbenner@gmail.com",
+  "pminniagara@gmail.com"
+];
+
+const ADMIN_PASSWORD = "password";
+
+
+/* =========================================================
+   KEY PROPERTIES UNIT DATA
    ========================================================= */
 
 const DEFAULT_UNITS = [
 
-  // 164 BERTIE STREET
+  /* 164 BERTIE STREET */
 
   {
     id: "recGaKNeziKhYh0EF",
@@ -48,7 +59,7 @@ const DEFAULT_UNITS = [
   },
 
 
-  // 164 DOMINION ROAD
+  /* 164 DOMINION ROAD */
 
   {
     id: "rec4VFr44QsIDgVcq",
@@ -78,7 +89,7 @@ const DEFAULT_UNITS = [
   },
 
 
-  // 245 HIGH STREET
+  /* 245 HIGH STREET */
 
   {
     id: "recImT47KdDaVUJEa",
@@ -108,7 +119,7 @@ const DEFAULT_UNITS = [
   },
 
 
-  // 39 CLEVELAND STREET
+  /* 39 CLEVELAND STREET */
 
   {
     id: "recgW8rYClk31t4Yi",
@@ -159,39 +170,69 @@ const DEFAULT_UNITS = [
 
 
 /* =========================================================
-   STORAGE
+   LOCAL STORAGE
    ========================================================= */
+
+function cloneDefaultUnits() {
+
+  return DEFAULT_UNITS.map(unit => ({
+    ...unit
+  }));
+
+}
+
 
 function getUnits() {
 
-  const saved = localStorage.getItem(STORAGE_KEY);
+  const saved =
+    localStorage.getItem(STORAGE_KEY);
+
 
   if (!saved) {
-    saveUnits(DEFAULT_UNITS);
-    return structuredClone(DEFAULT_UNITS);
+
+    const units =
+      cloneDefaultUnits();
+
+    saveUnits(units);
+
+    return units;
+
   }
 
+
   try {
+
     return JSON.parse(saved);
+
   } catch (error) {
-    saveUnits(DEFAULT_UNITS);
-    return structuredClone(DEFAULT_UNITS);
+
+    const units =
+      cloneDefaultUnits();
+
+    saveUnits(units);
+
+    return units;
+
   }
 
 }
 
 
 function saveUnits(units) {
+
   localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify(units)
   );
+
 }
 
 
 function resetUnits() {
 
-  saveUnits(DEFAULT_UNITS);
+  saveUnits(
+    cloneDefaultUnits()
+  );
 
   renderEverything();
 
@@ -207,9 +248,14 @@ function formatUnitName(unit) {
   let name =
     `${unit.property} — Unit ${unit.unitNumber}`;
 
+
   if (unit.unitLabel) {
-    name += ` (${unit.unitLabel})`;
+
+    name +=
+      ` (${unit.unitLabel})`;
+
   }
+
 
   return name;
 
@@ -218,12 +264,9 @@ function formatUnitName(unit) {
 
 function formatUnitMeta(unit) {
 
-  const bedroomText =
-    unit.bedrooms === 1
-      ? "1 bedroom"
-      : `${unit.bedrooms} bedrooms`;
-
-  return bedroomText;
+  return unit.bedrooms === 1
+    ? "1 bedroom"
+    : `${unit.bedrooms} bedrooms`;
 
 }
 
@@ -231,45 +274,65 @@ function formatUnitMeta(unit) {
 function getAvailableUnits() {
 
   return getUnits().filter(
-    unit => unit.available === true
+    unit =>
+      unit.available === true
   );
 
 }
 
 
 /* =========================================================
-   PUBLIC HOME PAGE
+   HOME PAGE AVAILABILITY
    ========================================================= */
 
 function renderHomeAvailability() {
 
   const rentalContainer =
-    document.getElementById("availableRentals");
+    document.getElementById(
+      "availableRentals"
+    );
+
 
   const heroContainer =
-    document.getElementById("heroAvailability");
+    document.getElementById(
+      "heroAvailability"
+    );
 
 
-  if (!rentalContainer && !heroContainer) {
+  if (
+    !rentalContainer &&
+    !heroContainer
+  ) {
+
     return;
+
   }
 
 
-  const availableUnits = getAvailableUnits();
+  const availableUnits =
+    getAvailableUnits();
 
 
   /* HERO */
 
   if (heroContainer) {
 
-    if (availableUnits.length === 0) {
+    if (
+      availableUnits.length === 0
+    ) {
 
       heroContainer.innerHTML = `
         <div class="hero-unit">
-          <strong>No current vacancies</strong>
+
+          <strong>
+            No current vacancies
+          </strong>
+
           <span>
-            Send us an inquiry and we'll keep your information on hand.
+            Send us an inquiry and tell us
+            what you're looking for.
           </span>
+
         </div>
       `;
 
@@ -279,20 +342,25 @@ function renderHomeAvailability() {
         availableUnits
           .slice(0, 3)
           .map(unit => `
+
             <div class="hero-unit">
+
               <strong>
                 ${unit.property}
               </strong>
 
               <span>
                 Unit ${unit.unitNumber}
-                ${unit.unitLabel
-                  ? ` · ${unit.unitLabel}`
-                  : ""
+                ${
+                  unit.unitLabel
+                    ? ` · ${unit.unitLabel}`
+                    : ""
                 }
                 · ${formatUnitMeta(unit)}
               </span>
+
             </div>
+
           `)
           .join("");
 
@@ -301,19 +369,26 @@ function renderHomeAvailability() {
   }
 
 
-  /* AVAILABLE RENTALS */
+  /* RENTALS */
 
   if (!rentalContainer) {
+
     return;
+
   }
 
 
-  if (availableUnits.length === 0) {
+  if (
+    availableUnits.length === 0
+  ) {
 
     rentalContainer.innerHTML = `
+
       <div class="empty-state">
 
-        <h3>No rentals are currently listed.</h3>
+        <h3>
+          No rentals are currently listed.
+        </h3>
 
         <p>
           Availability changes throughout the year.
@@ -328,6 +403,7 @@ function renderHomeAvailability() {
         </a>
 
       </div>
+
     `;
 
     return;
@@ -337,81 +413,92 @@ function renderHomeAvailability() {
 
   rentalContainer.innerHTML =
     availableUnits
-      .map(unit => {
+      .map(unit => `
 
-        return `
-          <article class="rental-card">
+        <article class="rental-card">
 
-            <div class="rental-visual">
 
-              <span class="rental-visual-badge">
-                Available
+          <div class="rental-visual">
+
+            <span class="rental-visual-badge">
+              Available
+            </span>
+
+          </div>
+
+
+          <div class="rental-content">
+
+            <h3>
+              ${unit.property}
+            </h3>
+
+            <p>
+              Unit ${unit.unitNumber}
+              ${
+                unit.unitLabel
+                  ? ` — ${unit.unitLabel}`
+                  : ""
+              }
+            </p>
+
+
+            <div class="rental-meta">
+
+              <span>
+                ${formatUnitMeta(unit)}
+              </span>
+
+              <span>
+                Fort Erie
               </span>
 
             </div>
 
 
-            <div class="rental-content">
+            <a
+              href="inquiry.html?unit=${encodeURIComponent(unit.id)}"
+              class="button button-primary button-full"
+            >
+              I'm Interested
+            </a>
 
-              <h3>
-                ${unit.property}
-              </h3>
-
-              <p>
-                Unit ${unit.unitNumber}
-                ${unit.unitLabel
-                  ? ` — ${unit.unitLabel}`
-                  : ""
-                }
-              </p>
+          </div>
 
 
-              <div class="rental-meta">
+        </article>
 
-                <span>
-                  ${formatUnitMeta(unit)}
-                </span>
-
-                <span>
-                  Fort Erie
-                </span>
-
-              </div>
-
-
-              <a
-                href="inquiry.html?unit=${encodeURIComponent(unit.id)}"
-                class="button button-primary button-full"
-              >
-                I'm Interested
-              </a>
-
-            </div>
-
-          </article>
-        `;
-
-      })
+      `)
       .join("");
 
 }
 
 
 /* =========================================================
-   DROPDOWNS
+   AVAILABLE UNIT DROPDOWNS
    ========================================================= */
 
-function populateUnitSelect(selectId, options = {}) {
+function populateUnitSelect(
+  selectId,
+  options = {}
+) {
 
   const select =
-    document.getElementById(selectId);
+    document.getElementById(
+      selectId
+    );
+
 
   if (!select) {
+
     return;
+
   }
 
 
-  const availableUnits = getAvailableUnits();
+  const availableUnits =
+    getAvailableUnits();
+
 
   const allowAny =
     options.allowAny !== false;
@@ -421,52 +508,75 @@ function populateUnitSelect(selectId, options = {}) {
 
 
   const placeholder =
-    document.createElement("option");
+    document.createElement(
+      "option"
+    );
+
 
   placeholder.value = "";
+
   placeholder.textContent =
     "Select a rental";
 
-  select.appendChild(placeholder);
+
+  select.appendChild(
+    placeholder
+  );
 
 
   if (allowAny) {
 
     const anyOption =
-      document.createElement("option");
+      document.createElement(
+        "option"
+      );
 
-    anyOption.value = "any";
+
+    anyOption.value =
+      "any";
+
+
     anyOption.textContent =
       "Any available rental";
 
-    select.appendChild(anyOption);
+
+    select.appendChild(
+      anyOption
+    );
 
   }
 
 
-  availableUnits.forEach(unit => {
+  availableUnits.forEach(
+    unit => {
 
-    const option =
-      document.createElement("option");
-
-    option.value = unit.id;
-
-    option.textContent =
-      `${formatUnitName(unit)} — ${formatUnitMeta(unit)}`;
-
-    select.appendChild(option);
-
-  });
+      const option =
+        document.createElement(
+          "option"
+        );
 
 
-  /*
-    If visitor clicked "I'm Interested"
-    from the home page, automatically
-    select that unit.
-  */
+      option.value =
+        unit.id;
+
+
+      option.textContent =
+        `${formatUnitName(unit)} — ${formatUnitMeta(unit)}`;
+
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+
 
   const params =
-    new URLSearchParams(window.location.search);
+    new URLSearchParams(
+      window.location.search
+    );
+
 
   const selectedUnit =
     params.get("unit");
@@ -474,11 +584,14 @@ function populateUnitSelect(selectId, options = {}) {
 
   if (
     selectedUnit &&
-    [...select.options]
-      .some(option => option.value === selectedUnit)
+    [...select.options].some(
+      option =>
+        option.value === selectedUnit
+    )
   ) {
 
-    select.value = selectedUnit;
+    select.value =
+      selectedUnit;
 
   }
 
@@ -486,16 +599,21 @@ function populateUnitSelect(selectId, options = {}) {
 
 
 /* =========================================================
-   MOCK FORM SUBMISSION
+   MOCK INQUIRY SUBMISSION
    ========================================================= */
 
 function setupInquiryForm() {
 
   const form =
-    document.getElementById("inquiryForm");
+    document.getElementById(
+      "inquiryForm"
+    );
+
 
   if (!form) {
+
     return;
+
   }
 
 
@@ -512,7 +630,16 @@ function setupInquiryForm() {
         );
 
 
-      success.classList.remove("hidden");
+      if (!success) {
+
+        return;
+
+      }
+
+
+      success.classList.remove(
+        "hidden"
+      );
 
 
       success.scrollIntoView({
@@ -526,6 +653,10 @@ function setupInquiryForm() {
 }
 
 
+/* =========================================================
+   MOCK APPLICATION SUBMISSION
+   ========================================================= */
+
 function setupApplicationForm() {
 
   const form =
@@ -533,8 +664,11 @@ function setupApplicationForm() {
       "applicationForm"
     );
 
+
   if (!form) {
+
     return;
+
   }
 
 
@@ -551,7 +685,16 @@ function setupApplicationForm() {
         );
 
 
-      success.classList.remove("hidden");
+      if (!success) {
+
+        return;
+
+      }
+
+
+      success.classList.remove(
+        "hidden"
+      );
 
 
       success.scrollIntoView({
@@ -566,21 +709,30 @@ function setupApplicationForm() {
 
 
 /* =========================================================
-   ADMIN LOGIN
+   ADMIN
    ========================================================= */
 
 function setupAdmin() {
 
   const loginSection =
-    document.getElementById("adminLogin");
+    document.getElementById(
+      "adminLogin"
+    );
+
 
   const dashboard =
     document.getElementById(
       "adminDashboard"
     );
 
-  if (!loginSection || !dashboard) {
+
+  if (
+    !loginSection ||
+    !dashboard
+  ) {
+
     return;
+
   }
 
 
@@ -596,26 +748,74 @@ function setupAdmin() {
     );
 
 
+  const loginError =
+    document.getElementById(
+      "loginError"
+    );
+
+
+  const adminWelcome =
+    document.getElementById(
+      "adminWelcome"
+    );
+
+
   function showDashboard() {
 
-    loginSection.classList.add("hidden");
+    loginSection.classList.add(
+      "hidden"
+    );
 
-    dashboard.classList.remove("hidden");
 
-    logoutButton.classList.remove("hidden");
+    dashboard.classList.remove(
+      "hidden"
+    );
+
+
+    logoutButton.classList.remove(
+      "hidden"
+    );
+
+
+    const signedInEmail =
+      sessionStorage.getItem(
+        `${ADMIN_SESSION_KEY}-email`
+      );
+
+
+    if (
+      adminWelcome &&
+      signedInEmail
+    ) {
+
+      adminWelcome.textContent =
+        `Signed in as ${signedInEmail}`;
+
+    }
+
 
     renderAdminUnits();
+
+    setupApplicationLink();
 
   }
 
 
   function showLogin() {
 
-    loginSection.classList.remove("hidden");
+    loginSection.classList.remove(
+      "hidden"
+    );
 
-    dashboard.classList.add("hidden");
 
-    logoutButton.classList.add("hidden");
+    dashboard.classList.add(
+      "hidden"
+    );
+
+
+    logoutButton.classList.add(
+      "hidden"
+    );
 
   }
 
@@ -626,10 +826,16 @@ function setupAdmin() {
     );
 
 
-  if (loggedIn === "true") {
+  if (
+    loggedIn === "true"
+  ) {
+
     showDashboard();
+
   } else {
+
     showLogin();
+
   }
 
 
@@ -640,26 +846,57 @@ function setupAdmin() {
       event.preventDefault();
 
 
+      const emailInput =
+        document.getElementById(
+          "adminEmail"
+        );
+
+
+      const passwordInput =
+        document.getElementById(
+          "adminPassword"
+        );
+
+
       const email =
-        document
-          .getElementById("adminEmail")
+        emailInput
           .value
-          .trim();
+          .trim()
+          .toLowerCase();
 
 
-      /*
-        V1 DEMO LOGIN
+      const password =
+        passwordInput.value;
 
-        For the prototype we only require
-        a valid-looking email.
 
-        Production will replace this with
-        approved-email authentication.
-      */
+      const emailApproved =
+        APPROVED_ADMIN_EMAILS.includes(
+          email
+        );
 
-      if (!email.includes("@")) {
+
+      const passwordCorrect =
+        password ===
+        ADMIN_PASSWORD;
+
+
+      if (
+        !emailApproved ||
+        !passwordCorrect
+      ) {
+
+        loginError.classList.remove(
+          "hidden"
+        );
+
         return;
+
       }
+
+
+      loginError.classList.add(
+        "hidden"
+      );
 
 
       sessionStorage.setItem(
@@ -688,9 +925,24 @@ function setupAdmin() {
         ADMIN_SESSION_KEY
       );
 
+
       sessionStorage.removeItem(
         `${ADMIN_SESSION_KEY}-email`
       );
+
+
+      const passwordInput =
+        document.getElementById(
+          "adminPassword"
+        );
+
+
+      if (passwordInput) {
+
+        passwordInput.value = "";
+
+      }
+
 
       showLogin();
 
@@ -712,12 +964,14 @@ function setupAdmin() {
 
         const confirmed =
           window.confirm(
-            "Reset availability to the current Airtable starting state?"
+            "Reset availability to the original starting state?"
           );
 
 
         if (confirmed) {
+
           resetUnits();
+
         }
 
       }
@@ -729,7 +983,139 @@ function setupAdmin() {
 
 
 /* =========================================================
-   ADMIN UNIT MANAGEMENT
+   APPLICATION LINK
+   ========================================================= */
+
+function setupApplicationLink() {
+
+  const input =
+    document.getElementById(
+      "applicationLink"
+    );
+
+
+  const button =
+    document.getElementById(
+      "copyApplicationLink"
+    );
+
+
+  const success =
+    document.getElementById(
+      "copySuccess"
+    );
+
+
+  if (
+    !input ||
+    !button
+  ) {
+
+    return;
+
+  }
+
+
+  const applicationUrl =
+    new URL(
+      "apply.html",
+      window.location.href
+    ).href;
+
+
+  input.value =
+    applicationUrl;
+
+
+  if (
+    button.dataset.listenerAttached ===
+    "true"
+  ) {
+
+    return;
+
+  }
+
+
+  button.dataset.listenerAttached =
+    "true";
+
+
+  button.addEventListener(
+    "click",
+    async () => {
+
+      try {
+
+        await navigator.clipboard.writeText(
+          applicationUrl
+        );
+
+
+        showCopySuccess();
+
+
+      } catch (error) {
+
+        input.focus();
+
+        input.select();
+
+
+        document.execCommand(
+          "copy"
+        );
+
+
+        showCopySuccess();
+
+      }
+
+    }
+  );
+
+
+  function showCopySuccess() {
+
+    button.textContent =
+      "Copied ✓";
+
+
+    if (success) {
+
+      success.classList.remove(
+        "hidden"
+      );
+
+    }
+
+
+    window.setTimeout(
+      () => {
+
+        button.textContent =
+          "Copy Link";
+
+
+        if (success) {
+
+          success.classList.add(
+            "hidden"
+          );
+
+        }
+
+      },
+      2000
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ADMIN UNITS
    ========================================================= */
 
 function renderAdminUnits() {
@@ -739,18 +1125,27 @@ function renderAdminUnits() {
       "adminUnitGroups"
     );
 
+
   if (!container) {
+
     return;
+
   }
 
 
-  const units = getUnits();
+  const units =
+    getUnits();
 
 
   const properties =
-    [...new Set(
-      units.map(unit => unit.property)
-    )];
+    [
+      ...new Set(
+        units.map(
+          unit =>
+            unit.property
+        )
+      )
+    ];
 
 
   container.innerHTML =
@@ -760,22 +1155,28 @@ function renderAdminUnits() {
         const propertyUnits =
           units.filter(
             unit =>
-              unit.property === property
+              unit.property ===
+              property
           );
 
 
         const availableCount =
           propertyUnits.filter(
-            unit => unit.available
+            unit =>
+              unit.available
           ).length;
 
 
         return `
+
           <section class="property-group">
+
 
             <div class="property-group-header">
 
-              <h2>${property}</h2>
+              <h2>
+                ${property}
+              </h2>
 
               <span>
                 ${availableCount}
@@ -789,15 +1190,18 @@ function renderAdminUnits() {
 
             ${propertyUnits
               .map(unit => `
+
                 <div class="admin-unit">
+
 
                   <div class="admin-unit-info">
 
                     <strong>
                       Unit ${unit.unitNumber}
-                      ${unit.unitLabel
-                        ? ` — ${unit.unitLabel}`
-                        : ""
+                      ${
+                        unit.unitLabel
+                          ? ` — ${unit.unitLabel}`
+                          : ""
                       }
                     </strong>
 
@@ -816,9 +1220,10 @@ function renderAdminUnits() {
                     <input
                       type="checkbox"
                       data-unit-id="${unit.id}"
-                      ${unit.available
-                        ? "checked"
-                        : ""
+                      ${
+                        unit.available
+                          ? "checked"
+                          : ""
                       }
                     >
 
@@ -826,11 +1231,15 @@ function renderAdminUnits() {
 
                   </label>
 
+
                 </div>
+
               `)
               .join("")}
 
+
           </section>
+
         `;
 
       })
@@ -841,49 +1250,55 @@ function renderAdminUnits() {
     .querySelectorAll(
       "[data-unit-id]"
     )
-    .forEach(toggle => {
+    .forEach(
+      toggle => {
 
-      toggle.addEventListener(
-        "change",
-        event => {
+        toggle.addEventListener(
+          "change",
+          event => {
 
-          const unitId =
-            event.target.dataset.unitId;
+            const unitId =
+              event
+                .target
+                .dataset
+                .unitId;
 
 
-          const units =
-            getUnits();
+            const currentUnits =
+              getUnits();
 
 
-          const unit =
-            units.find(
-              item => item.id === unitId
+            const unit =
+              currentUnits.find(
+                item =>
+                  item.id ===
+                  unitId
+              );
+
+
+            if (!unit) {
+
+              return;
+
+            }
+
+
+            unit.available =
+              event.target.checked;
+
+
+            saveUnits(
+              currentUnits
             );
 
 
-          if (!unit) {
-            return;
+            renderAdminUnits();
+
           }
+        );
 
-
-          unit.available =
-            event.target.checked;
-
-
-          saveUnits(units);
-
-
-          /*
-            Re-render so group counts and
-            overall totals update.
-          */
-
-          renderAdminUnits();
-
-        }
-      );
-
-    });
+      }
+    );
 
 
   updateAvailableCount();
@@ -892,7 +1307,7 @@ function renderAdminUnits() {
 
 
 /* =========================================================
-   ADMIN COUNT
+   AVAILABLE COUNT
    ========================================================= */
 
 function updateAvailableCount() {
@@ -902,8 +1317,11 @@ function updateAvailableCount() {
       "availableCount"
     );
 
+
   if (!count) {
+
     return;
+
   }
 
 
@@ -914,12 +1332,13 @@ function updateAvailableCount() {
 
 
 /* =========================================================
-   RENDER EVERYTHING
+   RENDER
    ========================================================= */
 
 function renderEverything() {
 
   renderHomeAvailability();
+
 
   populateUnitSelect(
     "inquiryUnit",
@@ -928,6 +1347,7 @@ function renderEverything() {
     }
   );
 
+
   populateUnitSelect(
     "applicationUnit",
     {
@@ -935,25 +1355,21 @@ function renderEverything() {
     }
   );
 
+
   renderAdminUnits();
 
 }
 
 
 /* =========================================================
-   INITIALIZE
+   INITIALIZATION
    ========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
   () => {
 
-    /*
-      Ensure initial unit data exists.
-    */
-
     getUnits();
-
 
     renderEverything();
 

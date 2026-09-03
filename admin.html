@@ -1,33 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Admin | Key Properties</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <link rel="stylesheet" href="styles.css">
+  <title>
+    Admin | Key Properties
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="styles.css"
+  >
+
 </head>
 
-<body data-page="admin" class="admin-body">
+
+<body
+  data-page="admin"
+  class="admin-body"
+>
 
 
 <header class="admin-header">
+
   <div class="container header-inner">
 
-    <a class="brand" href="index.html">
-      <span class="brand-mark">K</span>
+    <a
+      class="brand"
+      href="index.html"
+    >
+
+      <span class="brand-mark">
+        K
+      </span>
 
       <span>
-        <strong>Key Properties</strong>
-        <small>Admin</small>
+
+        <strong>
+          Key Properties
+        </strong>
+
+        <small>
+          Admin
+        </small>
+
       </span>
+
     </a>
 
+
     <div class="admin-header-actions">
-      <a href="index.html" class="text-link">
+
+      <a
+        href="index.html"
+        class="text-link"
+      >
         View website
       </a>
+
 
       <button
         id="logoutButton"
@@ -36,60 +72,116 @@
       >
         Sign out
       </button>
+
     </div>
 
   </div>
+
 </header>
+
 
 
 <main>
 
-  <!-- LOGIN -->
 
-  <section id="adminLogin" class="admin-login">
+  <section
+    id="adminLogin"
+    class="admin-login"
+  >
+
 
     <div class="login-card">
 
-      <span class="eyebrow">Key Properties</span>
 
-      <h1>Admin sign in</h1>
+      <span class="eyebrow">
+        Key Properties
+      </span>
+
+
+      <h1>
+        Admin sign in
+      </h1>
+
 
       <p>
-        Enter your approved email address to manage rental availability.
+        Sign in to manage rental availability and
+        access the rental application.
       </p>
+
 
 
       <form id="adminLoginForm">
 
+
         <div class="field">
-          <label for="adminEmail">Email address</label>
+
+          <label for="adminEmail">
+            Email address
+          </label>
 
           <input
             id="adminEmail"
             name="adminEmail"
             type="email"
+            autocomplete="email"
             placeholder="you@example.com"
             required
           >
+
         </div>
 
+
+
+        <div class="field admin-password-field">
+
+          <label for="adminPassword">
+            Password
+          </label>
+
+          <input
+            id="adminPassword"
+            name="adminPassword"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Enter password"
+            required
+          >
+
+        </div>
+
+
+
+        <div
+          id="loginError"
+          class="login-error hidden"
+        >
+          Incorrect email address or password.
+        </div>
+
+
+
         <button
-          class="button button-primary button-full"
+          class="button button-primary button-full admin-login-button"
           type="submit"
         >
-          Continue
+          Sign In
         </button>
 
       </form>
 
 
+
       <div class="prototype-note">
-        <strong>V1 Prototype</strong>
+
+        <strong>
+          Preview
+        </strong>
 
         <p>
-          Any valid email will work for now. Production will restrict
-          access to approved Key Properties email addresses.
+          This is a lightweight preview login.
+          Production will use secure authentication.
         </p>
+
       </div>
 
     </div>
@@ -97,47 +189,211 @@
   </section>
 
 
-  <!-- DASHBOARD -->
 
-  <section id="adminDashboard" class="admin-dashboard hidden">
+  <section
+    id="adminDashboard"
+    class="admin-dashboard hidden"
+  >
+
 
     <div class="container">
 
+
       <div class="admin-page-heading">
 
-        <div>
-          <span class="eyebrow">Rental Management</span>
-          <h1>Available Units</h1>
 
-          <p>
-            Turn a unit on to make it appear on the public website
-            and rental forms.
+        <div>
+
+          <span class="eyebrow">
+            Key Properties Admin
+          </span>
+
+          <h1>
+            Rental Management
+          </h1>
+
+          <p id="adminWelcome">
+            Manage available rentals and application access.
           </p>
+
         </div>
 
 
         <div class="availability-summary">
-          <span id="availableCount">0</span>
-          <small>available</small>
+
+          <span id="availableCount">
+            0
+          </span>
+
+          <small>
+            available
+          </small>
+
         </div>
 
       </div>
+
+
+
+      <div class="admin-tools">
+
+
+        <section class="admin-tool-card">
+
+
+          <div class="admin-tool-icon">
+            ↗
+          </div>
+
+
+          <div>
+
+            <span class="eyebrow">
+              Applicant Link
+            </span>
+
+            <h2>
+              Rental Application
+            </h2>
+
+            <p>
+              Send this link only to applicants you want
+              to complete the full rental application.
+            </p>
+
+
+            <div class="copy-link-row">
+
+              <input
+                id="applicationLink"
+                type="text"
+                readonly
+              >
+
+
+              <button
+                id="copyApplicationLink"
+                class="button button-primary"
+                type="button"
+              >
+                Copy Link
+              </button>
+
+            </div>
+
+
+            <div class="admin-link-actions">
+
+              <a
+                href="apply.html"
+                target="_blank"
+                class="text-link"
+              >
+                Preview application →
+              </a>
+
+            </div>
+
+
+            <div
+              id="copySuccess"
+              class="copy-success hidden"
+            >
+              Application link copied ✓
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <section class="admin-tool-card">
+
+
+          <div class="admin-tool-icon">
+            ⌂
+          </div>
+
+
+          <div>
+
+            <span class="eyebrow">
+              Public Website
+            </span>
+
+            <h2>
+              Rental Inquiry
+            </h2>
+
+            <p>
+              Preview the same inquiry form prospective
+              tenants will use from the website.
+            </p>
+
+
+            <a
+              href="inquiry.html"
+              target="_blank"
+              class="button button-secondary"
+            >
+              Open Inquiry Form
+            </a>
+
+          </div>
+
+        </section>
+
+
+      </div>
+
+
+
+      <div class="admin-section-heading">
+
+        <div>
+
+          <span class="eyebrow">
+            Website Availability
+          </span>
+
+          <h2>
+            Available Rentals
+          </h2>
+
+          <p>
+            Turn a unit on to make it appear on the public
+            website and inquiry form.
+          </p>
+
+        </div>
+
+      </div>
+
 
 
       <div class="admin-notice">
+
         <div>
-          <strong>Prototype behaviour</strong>
+
+          <strong>
+            Preview behaviour
+          </strong>
 
           <p>
-            Changes are currently saved only in this browser.
-            The production version will sync these settings across
-            Mom, Dad and David automatically.
+            Availability changes are currently saved only
+            in this browser. The production version will
+            synchronize changes between Mom, Dad and David.
           </p>
+
         </div>
+
       </div>
 
 
+
       <div id="adminUnitGroups"></div>
+
 
 
       <div class="admin-bottom-actions">
@@ -147,25 +403,31 @@
           class="button button-secondary"
           type="button"
         >
-          Reset to Airtable Starting State
+          Reset Availability
         </button>
+
 
         <a
           href="index.html#available"
           class="button button-primary"
+          target="_blank"
         >
           View Public Website
         </a>
 
       </div>
 
+
     </div>
 
   </section>
 
+
 </main>
 
+
 <script src="app.js"></script>
+
 
 </body>
 </html>
