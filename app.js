@@ -630,7 +630,7 @@ function setupInquiryForm() {
         );
 
 
-      const statusBox =
+      const success =
         document.getElementById(
           "inquirySuccess"
         );
@@ -638,7 +638,7 @@ function setupInquiryForm() {
 
       if (
         !submitButton ||
-        !statusBox
+        !success
       ) {
 
         return;
@@ -650,7 +650,7 @@ function setupInquiryForm() {
         submitButton.textContent;
 
 
-      statusBox.classList.add(
+      success.classList.add(
         "hidden"
       );
 
@@ -671,10 +671,6 @@ function setupInquiryForm() {
         Object.fromEntries(
           formData.entries()
         );
-
-
-      data.formType =
-        "inquiry";
 
 
       /*
@@ -706,15 +702,38 @@ function setupInquiryForm() {
       }
 
 
+      /*
+        FormSubmit settings.
+
+        David receives the primary email.
+        Mom and Dad receive copies.
+      */
+
+      data._subject =
+        `Rental Inquiry — ${data.firstName || ""} ${data.lastName || ""}`.trim();
+
+
+      data._cc =
+        "annbenner@gmail.com,pminniagara@gmail.com";
+
+
+      data._template =
+        "table";
+
+
+      data._captcha =
+        "false";
+
+
       data.consent =
         "Confirmed";
 
 
       try {
 
-        const apiResponse =
+        const response =
           await fetch(
-            "/api/send-form",
+            "https://formsubmit.co/ajax/davebenner14@gmail.com",
             {
 
               method:
@@ -730,9 +749,6 @@ function setupInquiryForm() {
 
               },
 
-              cache:
-                "no-store",
-
               body:
                 JSON.stringify(data)
 
@@ -740,39 +756,15 @@ function setupInquiryForm() {
           );
 
 
-        const responseText =
-          await apiResponse.text();
+        const result =
+          await response.json();
 
 
-        let result = {};
-
-
-        if (responseText) {
-
-          try {
-
-            result =
-              JSON.parse(responseText);
-
-          } catch (parseError) {
-
-            result = {};
-
-          }
-
-        }
-
-
-        if (!apiResponse.ok) {
-
-          const serverMessage =
-            result.error ||
-            result.details ||
-            `Server returned HTTP ${apiResponse.status}.`;
-
+        if (!response.ok) {
 
           throw new Error(
-            serverMessage
+            result.message ||
+            "Unable to send inquiry."
           );
 
         }
@@ -789,7 +781,7 @@ function setupInquiryForm() {
         );
 
 
-        statusBox.innerHTML = `
+        success.innerHTML = `
 
           <strong>
             Inquiry received ✓
@@ -804,12 +796,12 @@ function setupInquiryForm() {
         `;
 
 
-        statusBox.classList.remove(
+        success.classList.remove(
           "hidden"
         );
 
 
-        statusBox.scrollIntoView({
+        success.scrollIntoView({
           behavior: "smooth",
           block: "center"
         });
@@ -823,35 +815,27 @@ function setupInquiryForm() {
         );
 
 
-        statusBox.innerHTML = `
+        success.innerHTML = `
 
           <strong>
             We couldn't send your inquiry.
           </strong>
 
           <p>
-            Your inquiry was not submitted. Please try again.
-          </p>
-
-          <p style="font-size: 12px; opacity: 0.8;">
-            Technical detail:
-            ${String(error?.message || "Unknown error")
-              .replaceAll("&", "&amp;")
-              .replaceAll("<", "&lt;")
-              .replaceAll(">", "&gt;")
-              .replaceAll('"', "&quot;")
-              .replaceAll("'", "&#039;")}
+            Your inquiry was not submitted. Please try
+            again. If the problem continues, please
+            contact Key Properties directly.
           </p>
 
         `;
 
 
-        statusBox.classList.remove(
+        success.classList.remove(
           "hidden"
         );
 
 
-        statusBox.scrollIntoView({
+        success.scrollIntoView({
           behavior: "smooth",
           block: "center"
         });
@@ -906,7 +890,7 @@ function setupApplicationForm() {
         );
 
 
-      const statusBox =
+      const success =
         document.getElementById(
           "applicationSuccess"
         );
@@ -914,7 +898,7 @@ function setupApplicationForm() {
 
       if (
         !submitButton ||
-        !statusBox
+        !success
       ) {
 
         return;
@@ -926,7 +910,7 @@ function setupApplicationForm() {
         submitButton.textContent;
 
 
-      statusBox.classList.add(
+      success.classList.add(
         "hidden"
       );
 
@@ -947,10 +931,6 @@ function setupApplicationForm() {
         Object.fromEntries(
           formData.entries()
         );
-
-
-      data.formType =
-        "application";
 
 
       /*
@@ -982,15 +962,38 @@ function setupApplicationForm() {
       }
 
 
+      /*
+        FormSubmit settings.
+
+        David receives the primary email.
+        Mom and Dad receive copies.
+      */
+
+      data._subject =
+        `Rental Application — ${data.firstName || ""} ${data.lastName || ""}`.trim();
+
+
+      data._cc =
+        "annbenner@gmail.com,pminniagara@gmail.com";
+
+
+      data._template =
+        "table";
+
+
+      data._captcha =
+        "false";
+
+
       data.certification =
         "Confirmed";
 
 
       try {
 
-        const apiResponse =
+        const response =
           await fetch(
-            "/api/send-form",
+            "https://formsubmit.co/ajax/davebenner14@gmail.com",
             {
 
               method:
@@ -1006,9 +1009,6 @@ function setupApplicationForm() {
 
               },
 
-              cache:
-                "no-store",
-
               body:
                 JSON.stringify(data)
 
@@ -1016,39 +1016,15 @@ function setupApplicationForm() {
           );
 
 
-        const responseText =
-          await apiResponse.text();
+        const result =
+          await response.json();
 
 
-        let result = {};
-
-
-        if (responseText) {
-
-          try {
-
-            result =
-              JSON.parse(responseText);
-
-          } catch (parseError) {
-
-            result = {};
-
-          }
-
-        }
-
-
-        if (!apiResponse.ok) {
-
-          const serverMessage =
-            result.error ||
-            result.details ||
-            `Server returned HTTP ${apiResponse.status}.`;
-
+        if (!response.ok) {
 
           throw new Error(
-            serverMessage
+            result.message ||
+            "Unable to send application."
           );
 
         }
@@ -1065,7 +1041,7 @@ function setupApplicationForm() {
         );
 
 
-        statusBox.innerHTML = `
+        success.innerHTML = `
 
           <strong>
             Application received ✓
@@ -1079,12 +1055,12 @@ function setupApplicationForm() {
         `;
 
 
-        statusBox.classList.remove(
+        success.classList.remove(
           "hidden"
         );
 
 
-        statusBox.scrollIntoView({
+        success.scrollIntoView({
           behavior: "smooth",
           block: "center"
         });
@@ -1098,7 +1074,7 @@ function setupApplicationForm() {
         );
 
 
-        statusBox.innerHTML = `
+        success.innerHTML = `
 
           <strong>
             We couldn't submit your application.
@@ -1109,25 +1085,15 @@ function setupApplicationForm() {
             Please try again before leaving this page.
           </p>
 
-          <p style="font-size: 12px; opacity: 0.8;">
-            Technical detail:
-            ${String(error?.message || "Unknown error")
-              .replaceAll("&", "&amp;")
-              .replaceAll("<", "&lt;")
-              .replaceAll(">", "&gt;")
-              .replaceAll('"', "&quot;")
-              .replaceAll("'", "&#039;")}
-          </p>
-
         `;
 
 
-        statusBox.classList.remove(
+        success.classList.remove(
           "hidden"
         );
 
 
-        statusBox.scrollIntoView({
+        success.scrollIntoView({
           behavior: "smooth",
           block: "center"
         });
