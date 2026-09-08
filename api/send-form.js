@@ -1,15 +1,13 @@
 /* =========================================================
    KEY PROPERTIES
    Form Email API
+   File location: /api/send-form.js
    ========================================================= */
 
 
-/*
-  EMAIL RECIPIENTS
-
-  Each recipient receives their own separate email.
-  This makes delivery easier to track in Resend.
-*/
+/* =========================================================
+   EMAIL RECIPIENTS
+   ========================================================= */
 
 const RECIPIENTS = [
   "annbenner@gmail.com",
@@ -19,13 +17,17 @@ const RECIPIENTS = [
 
 
 /*
-  Sender address.
+  IMPORTANT:
 
-  keyproperties.ca must be verified in Resend
-  for this sender to work.
+  keyproperties.ca MUST be verified in the same Resend
+  account that owns RESEND_API_KEY.
+
+  You can optionally set RESEND_FROM_EMAIL in Vercel.
+  If it is not set, this default sender is used.
 */
 
 const FROM_EMAIL =
+  process.env.RESEND_FROM_EMAIL ||
   "Key Properties <rentals@keyproperties.ca>";
 
 
@@ -39,7 +41,9 @@ function escapeHtml(value) {
     value === undefined ||
     value === null
   ) {
+
     return "";
+
   }
 
 
@@ -52,23 +56,6 @@ function escapeHtml(value) {
 
 }
 
-
-function wait(milliseconds) {
-
-  return new Promise(
-    resolve =>
-      setTimeout(
-        resolve,
-        milliseconds
-      )
-  );
-
-}
-
-
-/* =========================================================
-   FIELD LABELS
-   ========================================================= */
 
 function cleanLabel(key) {
 
@@ -122,10 +109,8 @@ function cleanLabel(key) {
     notes:
       "Additional Notes",
 
-
-    /* =====================================================
-       RENTAL APPLICATION
-       ===================================================== */
+    consent:
+      "Consent",
 
     moveDate:
       "Date Premises Required",
@@ -212,7 +197,10 @@ function cleanLabel(key) {
       "Emergency Contact Phone",
 
     signature:
-      "Applicant Signature / Full Name"
+      "Applicant Signature / Full Name",
+
+    certification:
+      "Certification"
 
   };
 
@@ -221,10 +209,6 @@ function cleanLabel(key) {
 
 }
 
-
-/* =========================================================
-   FORMAT EMAIL
-   ========================================================= */
 
 function createEmailBody(
   formType,
@@ -264,13 +248,10 @@ function createEmailBody(
                 vertical-align: top;
               "
             >
-
               ${escapeHtml(
                 cleanLabel(key)
               )}
-
             </td>
-
 
             <td
               style="
@@ -282,9 +263,7 @@ function createEmailBody(
                 vertical-align: top;
               "
             >
-
               ${escapeHtml(value)}
-
             </td>
 
           </tr>
@@ -310,7 +289,6 @@ function createEmailBody(
         "
       >
 
-
         <div
           style="
             max-width: 700px;
@@ -319,9 +297,6 @@ function createEmailBody(
           "
         >
 
-
-          <!-- HEADER -->
-
           <div
             style="
               padding: 30px;
@@ -329,7 +304,6 @@ function createEmailBody(
               border-radius: 14px 14px 0 0;
             "
           >
-
 
             <div
               style="
@@ -340,11 +314,8 @@ function createEmailBody(
                 text-transform: uppercase;
               "
             >
-
               Key Properties
-
             </div>
-
 
             <h1
               style="
@@ -353,17 +324,11 @@ function createEmailBody(
                 font-size: 28px;
               "
             >
-
               ${heading}
-
             </h1>
-
 
           </div>
 
-
-
-          <!-- CONTENT -->
 
           <div
             style="
@@ -375,7 +340,6 @@ function createEmailBody(
             "
           >
 
-
             <p
               style="
                 margin: 0 0 22px;
@@ -384,16 +348,12 @@ function createEmailBody(
                 line-height: 1.6;
               "
             >
-
               A new ${
                 formType === "application"
                   ? "rental application"
                   : "rental inquiry"
-              } was submitted through the
-              Key Properties website.
-
+              } was submitted through the Key Properties website.
             </p>
-
 
 
             <table
@@ -405,11 +365,8 @@ function createEmailBody(
                 border: 1px solid #e6ebe8;
               "
             >
-
               ${rows}
-
             </table>
-
 
 
             <p
@@ -419,158 +376,18 @@ function createEmailBody(
                 font-size: 11px;
               "
             >
-
-              Sent automatically from the
-              Key Properties website.
-
+              Sent automatically from the Key Properties website.
             </p>
-
 
           </div>
 
-
         </div>
-
 
       </body>
 
     </html>
 
   `;
-
-}
-
-
-/* =========================================================
-   SEND EMAIL TO ONE RECIPIENT
-   ========================================================= */
-
-async function sendEmail({
-  recipient,
-  subject,
-  html,
-  replyTo
-}) {
-
-  const resendResponse =
-    await fetch(
-      "https://api.resend.com/emails",
-      {
-
-        method:
-          "POST",
-
-        headers: {
-
-          Authorization:
-            `Bearer ${process.env.RESEND_API_KEY}`,
-
-          "Content-Type":
-            "application/json",
-
-          "User-Agent":
-            "KeyProperties/1.0"
-
-        },
-
-
-        body:
-          JSON.stringify({
-
-            from:
-              FROM_EMAIL,
-
-            /*
-              Send to ONE person per email.
-
-              This means Mom, Dad and David
-              each get their own individual
-              Resend delivery record.
-            */
-
-            to: [
-              recipient
-            ],
-
-            subject,
-
-            html,
-
-            /*
-              Clicking Reply will reply
-              directly to the person who
-              submitted the form.
-            */
-
-            reply_to:
-              replyTo
-
-          })
-
-      }
-    );
-
-
-  let resendData;
-
-
-  try {
-
-    resendData =
-      await resendResponse.json();
-
-  } catch {
-
-    resendData = {};
-
-  }
-
-
-  if (!resendResponse.ok) {
-
-    console.error(
-      `Resend error for ${recipient}:`,
-      {
-        status:
-          resendResponse.status,
-        statusText:
-          resendResponse.statusText,
-        data:
-          resendData
-      }
-    );
-
-
-    const resendMessage =
-      resendData?.message ||
-      resendData?.error ||
-      "Unknown Resend error";
-
-
-    throw new Error(
-      `Could not send email to ${recipient}: ${resendMessage}`
-    );
-
-  }
-
-
-  console.log(
-    `Key Properties form email sent successfully to ${recipient}.`,
-    resendData
-  );
-
-
-  return {
-
-    recipient,
-
-    success:
-      true,
-
-    id:
-      resendData.id || null
-
-  };
 
 }
 
@@ -584,17 +401,32 @@ export default async function handler(
   response
 ) {
 
-  /* =======================================================
-     ONLY ALLOW POST
-     ======================================================= */
+  /*
+    Prevent a browser/proxy from caching API responses.
+  */
+
+  response.setHeader(
+    "Cache-Control",
+    "no-store"
+  );
+
 
   if (
     request.method !== "POST"
   ) {
 
+    response.setHeader(
+      "Allow",
+      "POST"
+    );
+
+
     return response
       .status(405)
       .json({
+
+        success:
+          false,
 
         error:
           "Method not allowed."
@@ -606,22 +438,83 @@ export default async function handler(
 
   try {
 
-
     /* =====================================================
-       READ FORM DATA
+       CONFIGURATION CHECK
        ===================================================== */
 
-    const data =
-      typeof request.body === "string"
-        ? JSON.parse(request.body)
-        : request.body;
+    const apiKey =
+      process.env.RESEND_API_KEY;
 
 
-    if (!data) {
+    if (!apiKey) {
+
+      console.error(
+        "RESEND_API_KEY is not configured in Vercel."
+      );
+
+
+      return response
+        .status(500)
+        .json({
+
+          success:
+            false,
+
+          error:
+            "RESEND_API_KEY is missing from the Vercel environment variables."
+
+        });
+
+    }
+
+
+    /* =====================================================
+       READ REQUEST BODY
+       ===================================================== */
+
+    let data =
+      request.body;
+
+
+    if (
+      typeof data === "string"
+    ) {
+
+      try {
+
+        data =
+          JSON.parse(data);
+
+      } catch (parseError) {
+
+        return response
+          .status(400)
+          .json({
+
+            success:
+              false,
+
+            error:
+              "The form data could not be read."
+
+          });
+
+      }
+
+    }
+
+
+    if (
+      !data ||
+      typeof data !== "object"
+    ) {
 
       return response
         .status(400)
         .json({
+
+          success:
+            false,
 
           error:
             "Missing form data."
@@ -632,7 +525,7 @@ export default async function handler(
 
 
     /* =====================================================
-       VALIDATE FORM TYPE
+       VALIDATION
        ===================================================== */
 
     const formType =
@@ -648,6 +541,9 @@ export default async function handler(
         .status(400)
         .json({
 
+          success:
+            false,
+
           error:
             "Invalid form type."
 
@@ -655,10 +551,6 @@ export default async function handler(
 
     }
 
-
-    /* =====================================================
-       REQUIRED CONTACT INFORMATION
-       ===================================================== */
 
     if (
       !data.firstName ||
@@ -670,6 +562,9 @@ export default async function handler(
         .status(400)
         .json({
 
+          success:
+            false,
+
           error:
             "Required contact information is missing."
 
@@ -679,32 +574,7 @@ export default async function handler(
 
 
     /* =====================================================
-       VERIFY EMAIL SERVICE CONFIGURATION
-       ===================================================== */
-
-    if (
-      !process.env.RESEND_API_KEY
-    ) {
-
-      console.error(
-        "RESEND_API_KEY is missing from the Vercel environment."
-      );
-
-
-      return response
-        .status(500)
-        .json({
-
-          error:
-            "The email service is not configured."
-
-        });
-
-    }
-
-
-    /* =====================================================
-       EMAIL SUBJECT
+       BUILD EMAIL
        ===================================================== */
 
     const subject =
@@ -715,187 +585,142 @@ export default async function handler(
         : `Rental Inquiry — ${data.firstName} ${data.lastName}`;
 
 
-    /* =====================================================
-       EMAIL HTML
-       ===================================================== */
-
-    const emailHtml =
+    const html =
       createEmailBody(
         formType,
         data
       );
 
 
+    /*
+      Resend officially supports an array in "to".
+
+      One API request sends the form notification to
+      Mom, Dad and David. This is intentionally simpler
+      than firing multiple API requests.
+    */
+
+    const payload = {
+
+      from:
+        FROM_EMAIL,
+
+      to:
+        RECIPIENTS,
+
+      subject,
+
+      html,
+
+      reply_to:
+        data.email
+
+    };
+
+
     /* =====================================================
-       SEND THREE SEPARATE EMAILS
-
-       Mom
-       Dad
-       David
-
-       These are sent one at a time so each recipient gets
-       an independent Resend delivery record.
-
-       A short delay is added between sends to avoid
-       triggering API rate limits.
+       SEND THROUGH RESEND
        ===================================================== */
 
-    const deliveryResults = [];
+    const resendResponse =
+      await fetch(
+        "https://api.resend.com/emails",
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Authorization":
+              `Bearer ${apiKey}`,
+
+            "Content-Type":
+              "application/json",
+
+            /*
+              Required by Resend for direct HTTP requests.
+            */
+
+            "User-Agent":
+              "key-properties-vercel/1.0"
+
+          },
+
+          body:
+            JSON.stringify(payload)
+
+        }
+      );
 
 
-    for (
-      let index = 0;
-      index < RECIPIENTS.length;
-      index += 1
-    ) {
+    const resendText =
+      await resendResponse.text();
 
-      const recipient =
-        RECIPIENTS[index];
 
+    let resendData = {};
+
+
+    if (resendText) {
 
       try {
 
-        const result =
-          await sendEmail({
+        resendData =
+          JSON.parse(resendText);
 
-            recipient,
+      } catch (parseError) {
 
-            subject,
+        resendData = {
+          raw:
+            resendText
+        };
 
-            html:
-              emailHtml,
+      }
 
-            replyTo:
-              data.email
-
-          });
-
-
-        deliveryResults.push({
-
-          recipient,
-
-          success:
-            true,
-
-          id:
-            result.id
-
-        });
+    }
 
 
-      } catch (error) {
+    /* =====================================================
+       RESEND ERROR
+       ===================================================== */
 
-        console.error(
-          `Email failed for ${recipient}:`,
-          error
-        );
+    if (!resendResponse.ok) {
+
+      const resendMessage =
+        resendData?.message ||
+        resendData?.error ||
+        resendData?.raw ||
+        "Resend rejected the email request.";
 
 
-        deliveryResults.push({
+      console.error(
+        "Resend send-form failure:",
+        {
+          status:
+            resendResponse.status,
+          statusText:
+            resendResponse.statusText,
+          from:
+            FROM_EMAIL,
+          recipients:
+            RECIPIENTS,
+          resend:
+            resendData
+        }
+      );
 
-          recipient,
+
+      return response
+        .status(502)
+        .json({
 
           success:
             false,
 
           error:
-            error?.message ||
-            "Unknown email delivery error."
+            `Resend error (${resendResponse.status}): ${resendMessage}`
 
         });
-
-      }
-
-
-      /*
-        Do not delay after the final recipient.
-      */
-
-      if (
-        index <
-        RECIPIENTS.length - 1
-      ) {
-
-        await wait(650);
-
-      }
-
-    }
-
-
-    /* =====================================================
-       LOG RESULTS IN VERCEL
-       ===================================================== */
-
-    console.log(
-      "Key Properties form delivery results:",
-      deliveryResults
-    );
-
-
-    /* =====================================================
-       CHECK FOR FAILED EMAILS
-       ===================================================== */
-
-    const successfulDeliveries =
-      deliveryResults.filter(
-        result =>
-          result.success
-      );
-
-
-    const failedDeliveries =
-      deliveryResults.filter(
-        result =>
-          !result.success
-      );
-
-
-    /*
-      If ALL three emails failed,
-      return an error to the website.
-    */
-
-    if (
-      successfulDeliveries.length === 0
-    ) {
-
-      console.error(
-        "All Key Properties email deliveries failed:",
-        failedDeliveries
-      );
-
-
-      return response
-        .status(500)
-        .json({
-
-          error:
-            "The form was received, but the notification emails could not be sent."
-
-        });
-
-    }
-
-
-    /*
-      If at least one recipient received
-      the email, we consider the form
-      submission successful.
-
-      Any failed recipient will still
-      appear clearly in the Vercel logs.
-    */
-
-    if (
-      failedDeliveries.length > 0
-    ) {
-
-      console.error(
-        "Some Key Properties email deliveries failed:",
-        failedDeliveries
-      );
 
     }
 
@@ -904,6 +729,18 @@ export default async function handler(
        SUCCESS
        ===================================================== */
 
+    console.log(
+      "Key Properties form email accepted by Resend:",
+      {
+        id:
+          resendData?.id || null,
+        formType,
+        recipients:
+          RECIPIENTS
+      }
+    );
+
+
     return response
       .status(200)
       .json({
@@ -911,24 +748,16 @@ export default async function handler(
         success:
           true,
 
-        delivered:
-          successfulDeliveries.length,
-
-        failed:
-          failedDeliveries.length
+        id:
+          resendData?.id || null
 
       });
 
 
   } catch (error) {
 
-
-    /* =====================================================
-       UNEXPECTED ERROR
-       ===================================================== */
-
     console.error(
-      "Key Properties form email error:",
+      "Key Properties send-form unexpected error:",
       error
     );
 
@@ -937,8 +766,12 @@ export default async function handler(
       .status(500)
       .json({
 
+        success:
+          false,
+
         error:
-          "Something went wrong while submitting the form."
+          error?.message ||
+          "Unexpected server error while sending the form."
 
       });
 

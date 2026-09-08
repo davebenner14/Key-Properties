@@ -630,7 +630,7 @@ function setupInquiryForm() {
         );
 
 
-      const success =
+      const statusBox =
         document.getElementById(
           "inquirySuccess"
         );
@@ -638,7 +638,7 @@ function setupInquiryForm() {
 
       if (
         !submitButton ||
-        !success
+        !statusBox
       ) {
 
         return;
@@ -650,7 +650,7 @@ function setupInquiryForm() {
         submitButton.textContent;
 
 
-      success.classList.add(
+      statusBox.classList.add(
         "hidden"
       );
 
@@ -712,7 +712,7 @@ function setupInquiryForm() {
 
       try {
 
-        const response =
+        const apiResponse =
           await fetch(
             "/api/send-form",
             {
@@ -723,9 +723,15 @@ function setupInquiryForm() {
               headers: {
 
                 "Content-Type":
+                  "application/json",
+
+                "Accept":
                   "application/json"
 
               },
+
+              cache:
+                "no-store",
 
               body:
                 JSON.stringify(data)
@@ -734,26 +740,39 @@ function setupInquiryForm() {
           );
 
 
+        const responseText =
+          await apiResponse.text();
+
+
         let result = {};
 
 
-        try {
+        if (responseText) {
 
-          result =
-            await response.json();
+          try {
 
-        } catch (error) {
+            result =
+              JSON.parse(responseText);
 
-          result = {};
+          } catch (parseError) {
+
+            result = {};
+
+          }
 
         }
 
 
-        if (!response.ok) {
+        if (!apiResponse.ok) {
+
+          const serverMessage =
+            result.error ||
+            result.details ||
+            `Server returned HTTP ${apiResponse.status}.`;
+
 
           throw new Error(
-            result.error ||
-            "Unable to send inquiry."
+            serverMessage
           );
 
         }
@@ -770,7 +789,7 @@ function setupInquiryForm() {
         );
 
 
-        success.innerHTML = `
+        statusBox.innerHTML = `
 
           <strong>
             Inquiry received ✓
@@ -785,12 +804,12 @@ function setupInquiryForm() {
         `;
 
 
-        success.classList.remove(
+        statusBox.classList.remove(
           "hidden"
         );
 
 
-        success.scrollIntoView({
+        statusBox.scrollIntoView({
           behavior: "smooth",
           block: "center"
         });
@@ -804,27 +823,35 @@ function setupInquiryForm() {
         );
 
 
-        success.innerHTML = `
+        statusBox.innerHTML = `
 
           <strong>
             We couldn't send your inquiry.
           </strong>
 
           <p>
-            Your inquiry was not submitted. Please try
-            again. If the problem continues, please
-            contact Key Properties directly.
+            Your inquiry was not submitted. Please try again.
+          </p>
+
+          <p style="font-size: 12px; opacity: 0.8;">
+            Technical detail:
+            ${String(error?.message || "Unknown error")
+              .replaceAll("&", "&amp;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;")
+              .replaceAll('"', "&quot;")
+              .replaceAll("'", "&#039;")}
           </p>
 
         `;
 
 
-        success.classList.remove(
+        statusBox.classList.remove(
           "hidden"
         );
 
 
-        success.scrollIntoView({
+        statusBox.scrollIntoView({
           behavior: "smooth",
           block: "center"
         });
@@ -879,7 +906,7 @@ function setupApplicationForm() {
         );
 
 
-      const success =
+      const statusBox =
         document.getElementById(
           "applicationSuccess"
         );
@@ -887,7 +914,7 @@ function setupApplicationForm() {
 
       if (
         !submitButton ||
-        !success
+        !statusBox
       ) {
 
         return;
@@ -899,7 +926,7 @@ function setupApplicationForm() {
         submitButton.textContent;
 
 
-      success.classList.add(
+      statusBox.classList.add(
         "hidden"
       );
 
@@ -961,7 +988,7 @@ function setupApplicationForm() {
 
       try {
 
-        const response =
+        const apiResponse =
           await fetch(
             "/api/send-form",
             {
@@ -972,9 +999,15 @@ function setupApplicationForm() {
               headers: {
 
                 "Content-Type":
+                  "application/json",
+
+                "Accept":
                   "application/json"
 
               },
+
+              cache:
+                "no-store",
 
               body:
                 JSON.stringify(data)
@@ -983,26 +1016,39 @@ function setupApplicationForm() {
           );
 
 
+        const responseText =
+          await apiResponse.text();
+
+
         let result = {};
 
 
-        try {
+        if (responseText) {
 
-          result =
-            await response.json();
+          try {
 
-        } catch (error) {
+            result =
+              JSON.parse(responseText);
 
-          result = {};
+          } catch (parseError) {
+
+            result = {};
+
+          }
 
         }
 
 
-        if (!response.ok) {
+        if (!apiResponse.ok) {
+
+          const serverMessage =
+            result.error ||
+            result.details ||
+            `Server returned HTTP ${apiResponse.status}.`;
+
 
           throw new Error(
-            result.error ||
-            "Unable to send application."
+            serverMessage
           );
 
         }
@@ -1019,7 +1065,7 @@ function setupApplicationForm() {
         );
 
 
-        success.innerHTML = `
+        statusBox.innerHTML = `
 
           <strong>
             Application received ✓
@@ -1033,12 +1079,12 @@ function setupApplicationForm() {
         `;
 
 
-        success.classList.remove(
+        statusBox.classList.remove(
           "hidden"
         );
 
 
-        success.scrollIntoView({
+        statusBox.scrollIntoView({
           behavior: "smooth",
           block: "center"
         });
@@ -1052,7 +1098,7 @@ function setupApplicationForm() {
         );
 
 
-        success.innerHTML = `
+        statusBox.innerHTML = `
 
           <strong>
             We couldn't submit your application.
@@ -1063,15 +1109,25 @@ function setupApplicationForm() {
             Please try again before leaving this page.
           </p>
 
+          <p style="font-size: 12px; opacity: 0.8;">
+            Technical detail:
+            ${String(error?.message || "Unknown error")
+              .replaceAll("&", "&amp;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;")
+              .replaceAll('"', "&quot;")
+              .replaceAll("'", "&#039;")}
+          </p>
+
         `;
 
 
-        success.classList.remove(
+        statusBox.classList.remove(
           "hidden"
         );
 
 
-        success.scrollIntoView({
+        statusBox.scrollIntoView({
           behavior: "smooth",
           block: "center"
         });
