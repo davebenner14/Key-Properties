@@ -53,6 +53,19 @@ function escapeHtml(value) {
 }
 
 
+function wait(milliseconds) {
+
+  return new Promise(
+    resolve =>
+      setTimeout(
+        resolve,
+        milliseconds
+      )
+  );
+
+}
+
+
 /* =========================================================
    FIELD LABELS
    ========================================================= */
@@ -453,7 +466,10 @@ async function sendEmail({
             `Bearer ${process.env.RESEND_API_KEY}`,
 
           "Content-Type":
-            "application/json"
+            "application/json",
+
+          "User-Agent":
+            "KeyProperties/1.0"
 
         },
 
@@ -514,12 +530,25 @@ async function sendEmail({
 
     console.error(
       `Resend error for ${recipient}:`,
-      resendData
+      {
+        status:
+          resendResponse.status,
+        statusText:
+          resendResponse.statusText,
+        data:
+          resendData
+      }
     );
 
 
+    const resendMessage =
+      resendData?.message ||
+      resendData?.error ||
+      "Unknown Resend error";
+
+
     throw new Error(
-      `Could not send email to ${recipient}`
+      `Could not send email to ${recipient}: ${resendMessage}`
     );
 
   }
@@ -650,6 +679,31 @@ export default async function handler(
 
 
     /* =====================================================
+       VERIFY EMAIL SERVICE CONFIGURATION
+       ===================================================== */
+
+    if (
+      !process.env.RESEND_API_KEY
+    ) {
+
+      console.error(
+        "RESEND_API_KEY is missing from the Vercel environment."
+      );
+
+
+      return response
+        .status(500)
+        .json({
+
+          error:
+            "The email service is not configured."
+
+        });
+
+    }
+
+
+    /* =====================================================
        EMAIL SUBJECT
        ===================================================== */
 
@@ -679,81 +733,95 @@ export default async function handler(
        Dad
        David
 
-       Promise.allSettled is intentional.
+       These are sent one at a time so each recipient gets
+       an independent Resend delivery record.
 
-       If one email fails, the other emails
-       can still be successfully delivered.
+       A short delay is added between sends to avoid
+       triggering API rate limits.
        ===================================================== */
 
-    const results =
-      await Promise.allSettled(
-
-        RECIPIENTS.map(
-          recipient =>
-            sendEmail({
-
-              recipient,
-
-              subject,
-
-              html:
-                emailHtml,
-
-              replyTo:
-                data.email
-
-            })
-        )
-
-      );
+    const deliveryResults = [];
 
 
-    /* =====================================================
-       FORMAT RESULTS
-       ===================================================== */
+    for (
+      let index = 0;
+      index < RECIPIENTS.length;
+      index += 1
+    ) {
 
-    const deliveryResults =
-      results.map(
-        (result, index) => {
-
-          const recipient =
-            RECIPIENTS[index];
+      const recipient =
+        RECIPIENTS[index];
 
 
-          if (
-            result.status === "fulfilled"
-          ) {
+      try {
 
-            return {
-
-              recipient,
-
-              success:
-                true,
-
-              id:
-                result.value.id
-
-            };
-
-          }
-
-
-          return {
+        const result =
+          await sendEmail({
 
             recipient,
 
-            success:
-              false,
+            subject,
 
-            error:
-              result.reason?.message ||
-              "Unknown email delivery error."
+            html:
+              emailHtml,
 
-          };
+            replyTo:
+              data.email
 
-        }
-      );
+          });
+
+
+        deliveryResults.push({
+
+          recipient,
+
+          success:
+            true,
+
+          id:
+            result.id
+
+        });
+
+
+      } catch (error) {
+
+        console.error(
+          `Email failed for ${recipient}:`,
+          error
+        );
+
+
+        deliveryResults.push({
+
+          recipient,
+
+          success:
+            false,
+
+          error:
+            error?.message ||
+            "Unknown email delivery error."
+
+        });
+
+      }
+
+
+      /*
+        Do not delay after the final recipient.
+      */
+
+      if (
+        index <
+        RECIPIENTS.length - 1
+      ) {
+
+        await wait(650);
+
+      }
+
+    }
 
 
     /* =====================================================
@@ -841,7 +909,13 @@ export default async function handler(
       .json({
 
         success:
-          true
+          true,
+
+        delivered:
+          successfulDeliveries.length,
+
+        failed:
+          failedDeliveries.length
 
       });
 
