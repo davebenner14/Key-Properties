@@ -1,6 +1,6 @@
 /* =========================================================
    KEY PROPERTIES
-   Frontend-only preview
+   Frontend Application
    ========================================================= */
 
 
@@ -599,7 +599,7 @@ function populateUnitSelect(
 
 
 /* =========================================================
-   MOCK INQUIRY SUBMISSION
+   INQUIRY SUBMISSION
    ========================================================= */
 
 function setupInquiryForm() {
@@ -619,9 +619,15 @@ function setupInquiryForm() {
 
   form.addEventListener(
     "submit",
-    event => {
+    async event => {
 
       event.preventDefault();
+
+
+      const submitButton =
+        form.querySelector(
+          'button[type="submit"]'
+        );
 
 
       const success =
@@ -630,22 +636,210 @@ function setupInquiryForm() {
         );
 
 
-      if (!success) {
+      if (
+        !submitButton ||
+        !success
+      ) {
 
         return;
 
       }
 
 
-      success.classList.remove(
+      const originalButtonText =
+        submitButton.textContent;
+
+
+      success.classList.add(
         "hidden"
       );
 
 
-      success.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-      });
+      submitButton.disabled =
+        true;
+
+
+      submitButton.textContent =
+        "Sending…";
+
+
+      const formData =
+        new FormData(form);
+
+
+      const data =
+        Object.fromEntries(
+          formData.entries()
+        );
+
+
+      data.formType =
+        "inquiry";
+
+
+      /*
+        Send the readable unit name instead
+        of the internal record ID.
+      */
+
+      const unitSelect =
+        document.getElementById(
+          "inquiryUnit"
+        );
+
+
+      if (unitSelect) {
+
+        const selectedOption =
+          unitSelect.options[
+            unitSelect.selectedIndex
+          ];
+
+
+        if (selectedOption) {
+
+          data.unit =
+            selectedOption.textContent.trim();
+
+        }
+
+      }
+
+
+      data.consent =
+        "Confirmed";
+
+
+      try {
+
+        const response =
+          await fetch(
+            "/api/send-form",
+            {
+
+              method:
+                "POST",
+
+              headers: {
+
+                "Content-Type":
+                  "application/json"
+
+              },
+
+              body:
+                JSON.stringify(data)
+
+            }
+          );
+
+
+        let result = {};
+
+
+        try {
+
+          result =
+            await response.json();
+
+        } catch (error) {
+
+          result = {};
+
+        }
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            result.error ||
+            "Unable to send inquiry."
+          );
+
+        }
+
+
+        form.reset();
+
+
+        populateUnitSelect(
+          "inquiryUnit",
+          {
+            allowAny: true
+          }
+        );
+
+
+        success.innerHTML = `
+
+          <strong>
+            Inquiry received ✓
+          </strong>
+
+          <p>
+            Thank you. Your rental inquiry has been sent
+            to Key Properties. We'll be in touch if we
+            have a suitable rental opportunity.
+          </p>
+
+        `;
+
+
+        success.classList.remove(
+          "hidden"
+        );
+
+
+        success.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+
+      } catch (error) {
+
+        console.error(
+          "Inquiry submission error:",
+          error
+        );
+
+
+        success.innerHTML = `
+
+          <strong>
+            We couldn't send your inquiry.
+          </strong>
+
+          <p>
+            Your inquiry was not submitted. Please try
+            again. If the problem continues, please
+            contact Key Properties directly.
+          </p>
+
+        `;
+
+
+        success.classList.remove(
+          "hidden"
+        );
+
+
+        success.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+
+      } finally {
+
+        submitButton.disabled =
+          false;
+
+
+        submitButton.textContent =
+          originalButtonText;
+
+      }
 
     }
   );
@@ -654,7 +848,7 @@ function setupInquiryForm() {
 
 
 /* =========================================================
-   MOCK APPLICATION SUBMISSION
+   APPLICATION SUBMISSION
    ========================================================= */
 
 function setupApplicationForm() {
@@ -674,9 +868,15 @@ function setupApplicationForm() {
 
   form.addEventListener(
     "submit",
-    event => {
+    async event => {
 
       event.preventDefault();
+
+
+      const submitButton =
+        form.querySelector(
+          'button[type="submit"]'
+        );
 
 
       const success =
@@ -685,22 +885,208 @@ function setupApplicationForm() {
         );
 
 
-      if (!success) {
+      if (
+        !submitButton ||
+        !success
+      ) {
 
         return;
 
       }
 
 
-      success.classList.remove(
+      const originalButtonText =
+        submitButton.textContent;
+
+
+      success.classList.add(
         "hidden"
       );
 
 
-      success.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-      });
+      submitButton.disabled =
+        true;
+
+
+      submitButton.textContent =
+        "Submitting…";
+
+
+      const formData =
+        new FormData(form);
+
+
+      const data =
+        Object.fromEntries(
+          formData.entries()
+        );
+
+
+      data.formType =
+        "application";
+
+
+      /*
+        Send the readable unit name instead
+        of the internal record ID.
+      */
+
+      const unitSelect =
+        document.getElementById(
+          "applicationUnit"
+        );
+
+
+      if (unitSelect) {
+
+        const selectedOption =
+          unitSelect.options[
+            unitSelect.selectedIndex
+          ];
+
+
+        if (selectedOption) {
+
+          data.unit =
+            selectedOption.textContent.trim();
+
+        }
+
+      }
+
+
+      data.certification =
+        "Confirmed";
+
+
+      try {
+
+        const response =
+          await fetch(
+            "/api/send-form",
+            {
+
+              method:
+                "POST",
+
+              headers: {
+
+                "Content-Type":
+                  "application/json"
+
+              },
+
+              body:
+                JSON.stringify(data)
+
+            }
+          );
+
+
+        let result = {};
+
+
+        try {
+
+          result =
+            await response.json();
+
+        } catch (error) {
+
+          result = {};
+
+        }
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            result.error ||
+            "Unable to send application."
+          );
+
+        }
+
+
+        form.reset();
+
+
+        populateUnitSelect(
+          "applicationUnit",
+          {
+            allowAny: false
+          }
+        );
+
+
+        success.innerHTML = `
+
+          <strong>
+            Application received ✓
+          </strong>
+
+          <p>
+            Thank you. Your rental application has been
+            submitted to Key Properties.
+          </p>
+
+        `;
+
+
+        success.classList.remove(
+          "hidden"
+        );
+
+
+        success.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+
+      } catch (error) {
+
+        console.error(
+          "Application submission error:",
+          error
+        );
+
+
+        success.innerHTML = `
+
+          <strong>
+            We couldn't submit your application.
+          </strong>
+
+          <p>
+            Your information has not been sent.
+            Please try again before leaving this page.
+          </p>
+
+        `;
+
+
+        success.classList.remove(
+          "hidden"
+        );
+
+
+        success.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+
+      } finally {
+
+        submitButton.disabled =
+          false;
+
+
+        submitButton.textContent =
+          originalButtonText;
+
+      }
 
     }
   );
